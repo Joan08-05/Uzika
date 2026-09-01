@@ -1,24 +1,26 @@
 import { NavLink } from 'react-router-dom';
-
-import { orders, vendors } from '../data/mockData';
-
-const activeOrdersCount = orders.filter(
-  (o) => o.status !== 'Completed' && o.status !== 'Cancelled'
-).length;
-
-const pendingVendorsCount = vendors.filter(
-  (v) => v.status === 'application'
-).length;
-
-const navItems = [
-  { label: 'Dashboard', path: '/' },
-  { label: 'Orders', path: '/orders', badge: activeOrdersCount },
-  { label: 'Vendors', path: '/vendors', badge: pendingVendorsCount },
-  { label: 'Customers', path: '/customers' },
-  { label: 'Architecture', path: '/architecture' },
-];
+import { useData } from '../context/DataContext';
 
 export default function Sidebar() {
+  const { orders, vendors } = useData();
+
+  const activeOrdersCount = orders.filter(
+    (o) => o.status !== 'Completed' && o.status !== 'Cancelled'
+  ).length;
+
+  const pendingVendorsCount = vendors.filter(
+    (v) => v.status === 'application'
+  ).length;
+
+  const navItems = [
+    { label: 'Dashboard', path: '/' },
+    { label: 'Orders', path: '/orders', badge: activeOrdersCount },
+    { label: 'Vendors', path: '/vendors?tab=application', badge: pendingVendorsCount },
+    { label: 'Customers', path: '/customers' },
+    { label: 'Complaints', path: '/complaints' },
+    { label: 'Architecture', path: '/architecture' },
+  ];
+
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">

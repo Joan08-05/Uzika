@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
-import { vendors } from '../data/mockData';
+import { useSearchParams } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 
-type Tab = 'active' | 'application' | 'suspended';
+type Tab = 'active' | 'application' | 'suspended' | 'rejected';
 
 export default function Vendors() {
-  const [tab, setTab] = useState<Tab>('active');
+  const { vendors, updateVendorStatus, markVendorSettled } = useData();
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as Tab) || 'active';
+  const [tab, setTab] = useState<Tab>(initialTab);
 
   const active = vendors.filter(v => v.status === 'active');
   const applications = vendors.filter(v => v.status === 'application');
   const suspended = vendors.filter(v => v.status === 'suspended');
-
-  const tabData = { active, application: applications, suspended };
+  const rejected = vendors.filter(v => v.status === 'rejected');
 
   return (
     <div>
@@ -27,6 +30,9 @@ export default function Vendors() {
         <button className={tab === 'suspended' ? 'filter-tab filter-tab-active' : 'filter-tab'} onClick={() => setTab('suspended')}>
           Suspended ({suspended.length})
         </button>
+        <button className={tab === 'rejected' ? 'filter-tab filter-tab-active' : 'filter-tab'} onClick={() => setTab('rejected')}>
+          Rejected ({rejected.length})
+        </button>
       </div>
 
       {tab === 'active' && (
@@ -38,7 +44,7 @@ export default function Vendors() {
               </tr>
             </thead>
             <tbody>
-              {tabData.active.map(v => (
+              {active.map(v => (
                 <tr key={v.name}>
                   <td><strong>{v.name}</strong></td>
                   <td>{v.location}</td>
@@ -47,8 +53,14 @@ export default function Vendors() {
                   <td>TZS {v.balance.toLocaleString()}</td>
                   <td>{v.commission}%</td>
                   <td>
-                    <button className="btn btn-outline">Settle</button>{' '}
-                    <button className="btn btn-danger-outline">Suspend</button>
+                    <button
+                      className="btn btn-outline"
+                      disabled={v.settledToday}
+                      onClick={() => markVendorSettled(v.name)}
+                    >
+                      {v.settledToday ? 'Settled' : 'Settle'}
+                    </button>{' '}
+                    <button className="btn btn-danger-outline" onClick={() => updateVendorStatus(v.name, 'suspended')}>Suspend</button>
                   </td>
                 </tr>
               ))}
@@ -59,29 +71,46 @@ export default function Vendors() {
 
       {tab === 'application' && (
         <div>
-          {tabData.application.map(v => (
+          {applications.map(v => (
             <div key={v.name} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div>
                 <strong>{v.name}</strong>
                 <div style={{ color: '#6b7280', fontSize: '14px' }}>{v.location}</div>
               </div>
               <div>
-                <button className="btn btn-primary">Approve</button>{' '}
-                <button className="btn btn-danger-outline">Reject</button>
+                <button className="btn btn-primary" onClick={() => updateVendorStatus(v.name, 'active')}>Approve</button>{' '}
+                <button className="btn btn-danger-outline" onClick={() => updateVendorStatus(v.name, 'rejected')}>Reject</button>
               </div>
             </div>
           ))}
+          {applications.length === 0 && <p style={{ color: '#9ca3af' }}>No pending applications.</p>}
         </div>
       )}
 
       {tab === 'suspended' && (
         <div>
-          {tabData.suspended.map(v => (
-            <div key={v.name} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {suspended.map(v => (
+            <div key={v.name} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <strong>{v.name}</strong>
-              <button className="btn btn-outline">Rudisha</button>
+              <button className="btn btn-outline" onClick={() => updateVendorStatus(v.name, 'active')}>Rudisha</button>
             </div>
           ))}
+          {suspended.length === 0 && <p style={{ color: '#9ca3af' }}>No suspended vendors.</p>}
+        </div>
+      )}
+
+      {tab === 'rejected' && (
+        <div>
+          {rejected.map(v => (
+            <div key={v.name} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div>
+                <strong>{v.name}</strong>
+                <div style={{ color: '#6b7280', fontSize: '14px' }}>{v.location}</div>
+              </div>
+              <button className="btn btn-outline" onClick={() => updateVendorStatus(v.name, 'application')}>Reconsider</button>
+            </div>
+          ))}
+          {rejected.length === 0 && <p style={{ color: '#9ca3af' }}>No rejected applications.</p>}
         </div>
       )}
     </div>

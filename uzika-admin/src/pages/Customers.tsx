@@ -1,7 +1,9 @@
 import PageHeader from '../components/PageHeader';
-import { customers } from '../data/mockData';
+import { useData } from '../context/DataContext';
 
 export default function Customers() {
+  const { customers, toggleCustomerSuspend, markCustomerRefunded } = useData();
+
   return (
     <div>
       <PageHeader title="Customer Management" />
@@ -26,8 +28,19 @@ export default function Customers() {
                   </span>
                 </td>
                 <td>
-                  <button className="btn btn-outline">Refund</button>{' '}
-                  <button className="btn btn-danger-outline">Suspend</button>
+                  <button
+                    className="btn btn-outline"
+                    disabled={c.refunded}
+                    onClick={() => markCustomerRefunded(c.name)}
+                  >
+                    {c.refunded ? 'Refunded' : 'Refund'}
+                  </button>{' '}
+                  <button
+                    className={c.status === 'active' ? 'btn btn-danger-outline' : 'btn btn-outline'}
+                    onClick={() => toggleCustomerSuspend(c.name)}
+                  >
+                    {c.status === 'active' ? 'Suspend' : 'Rudisha'}
+                  </button>
                 </td>
               </tr>
             ))}
