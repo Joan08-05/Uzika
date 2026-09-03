@@ -14,6 +14,7 @@ export interface Order {
   items: string;
   payment: string;
   timeline: TimelineStep[];
+  refundIssued: boolean;
 }
 
 export const orders: Order[] = [
@@ -25,6 +26,7 @@ export const orders: Order[] = [
       { stage: 'Preparing', time: '12:44' }, { stage: 'Ready', time: '12:52' },
       { stage: 'Completed', time: '12:58' },
     ],
+    refundIssued: false,
   },
   {
     id: 'CH10293', vendor: 'Chips Point', customer: 'Kelvin', amount: 7000, status: 'New',
@@ -34,6 +36,7 @@ export const orders: Order[] = [
       { stage: 'Preparing', time: null }, { stage: 'Ready', time: null },
       { stage: 'Completed', time: null },
     ],
+    refundIssued: false,
   },
   {
     id: 'CH10292', vendor: 'Mtaa Chips', customer: 'Rehema', amount: 12500, status: 'Ready',
@@ -43,6 +46,7 @@ export const orders: Order[] = [
       { stage: 'Preparing', time: '13:15' }, { stage: 'Ready', time: '13:30' },
       { stage: 'Completed', time: null },
     ],
+    refundIssued: false,
   },
   {
     id: 'CH10291', vendor: 'Mama Asha Chips', customer: 'John', amount: 8000, status: 'Preparing',
@@ -52,6 +56,7 @@ export const orders: Order[] = [
       { stage: 'Preparing', time: '14:25' }, { stage: 'Ready', time: null },
       { stage: 'Completed', time: null },
     ],
+    refundIssued: false,
   },
   {
     id: 'CH10300', vendor: 'Bonge la Chips', customer: 'Hamisi', amount: 4500, status: 'Completed',
@@ -61,6 +66,7 @@ export const orders: Order[] = [
       { stage: 'Preparing', time: '11:05' }, { stage: 'Ready', time: '11:15' },
       { stage: 'Completed', time: '11:20' },
     ],
+    refundIssued: false,
   },
 ];
 
