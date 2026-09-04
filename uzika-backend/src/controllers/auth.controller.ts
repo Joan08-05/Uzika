@@ -1,10 +1,10 @@
 import { Body, Controller, Post, UseGuards, Get, Request } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AuthService } from '../services/auth.service';
+import { SignupDto } from '../dto/auth/signup.dto';
+import { LoginDto } from '../dto/auth/login.dto';
+import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { ForgotPasswordDto } from '../dto/auth/forgot-password.dto';
+import { ResetPasswordDto } from '../dto/auth/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {

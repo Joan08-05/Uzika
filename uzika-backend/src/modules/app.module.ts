@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { Vendor } from './vendor.entity';
-import { AdminUser } from './auth/admin-user.entity';
-import { AuthModule } from './auth/auth.module';
+import { AppController } from '../controllers/app.controller';
+import { AppService } from '../services/app.service';
+import { Vendor } from '../database/entities/vendor.entity';
+import { AdminUser } from '../database/entities/admin-user.entity';
+import { AuthModule } from './auth.module';
 
 @Module({
   imports: [
