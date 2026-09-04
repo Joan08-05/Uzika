@@ -17,6 +17,9 @@ export class AdminUser {
   @Column({ default: 'Admin' })
   role: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  avatarUrl: string | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

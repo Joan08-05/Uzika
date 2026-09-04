@@ -13,6 +13,7 @@ import * as dns from 'dns';
 import { AdminUser } from '../database/entities/admin-user.entity';
 import { SignupDto } from '../dto/auth/signup.dto';
 import { LoginDto } from '../dto/auth/login.dto';
+import { UpdateProfileDto } from '../dto/auth/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -84,10 +85,39 @@ export class AuthService {
   }
 
   private buildToken(user: AdminUser) {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+  const payload = { sub: user.id, email: user.email, role: user.role };
+  return {
+    access_token: this.jwtService.sign(payload),
+    user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl },
+  };
+  }
+
+    async updateProfile(userId: number, dto: UpdateProfileDto, avatarUrl?: string) {
+    const user = await this.adminRepo.findOne({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const firstName = dto.firstName?.trim();
+    const lastName = dto.lastName?.trim();
+
+    if (firstName || lastName) {
+      const existingParts = user.name.split(' ');
+      const newFirst = firstName ?? existingParts[0] ?? '';
+      const newLast = lastName ?? existingParts.slice(1).join(' ');
+      user.name = [newFirst, newLast].filter(Boolean).join(' ');
+    }
+
+    if (avatarUrl) {
+      user.avatarUrl = avatarUrl;
+    }
+
+    await this.adminRepo.save(user);
+
     return {
-      access_token: this.jwtService.sign(payload),
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatarUrl: user.avatarUrl,
     };
   }
 }
