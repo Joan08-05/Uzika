@@ -17,12 +17,13 @@ interface DataContextType {
   markVendorSettled: (name: string) => void;
   toggleCustomerSuspend: (name: string) => void;
   markCustomerRefunded: (name: string) => void;
+  issueOrderRefund: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | null>(null);
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [orders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [vendors, setVendors] = useState<Vendor[]>(initialVendors);
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [complaints] = useState<Complaint[]>(initialComplaints);
@@ -45,9 +46,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setCustomers(prev => prev.map(c => (c.name === name ? { ...c, refunded: true } : c)));
   }
 
+  function issueOrderRefund(id: string) {
+    setOrders(prev => prev.map(o => (o.id === id ? { ...o, refundIssued: true } : o)));
+  }
+
   return (
     <DataContext.Provider
-      value={{ orders, vendors, customers, complaints, updateVendorStatus, markVendorSettled, toggleCustomerSuspend, markCustomerRefunded }}
+      value={{
+        orders, vendors, customers, complaints,
+        updateVendorStatus, markVendorSettled, toggleCustomerSuspend, markCustomerRefunded,
+        issueOrderRefund,
+      }}
     >
       {children}
     </DataContext.Provider>
