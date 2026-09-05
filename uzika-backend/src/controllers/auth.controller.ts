@@ -10,6 +10,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UpdateProfileDto } from '../dto/auth/update-profile.dto';
+import { InviteAdminDto } from '../dto/auth/invite-admin.dto';
+import { ActivateAccountDto } from '../dto/auth/activate-account.dto';
+import { UpdatePermissionsDto } from '../dto/auth/update-permissions.dto';
+import { Param } from '@nestjs/common';
+import { SuperAdminGuard } from '../guard/super-admin.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +41,7 @@ export class AuthController {
     return req.user;
   }
 
-    @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('me')
   @UseInterceptors(
     FileInterceptor('avatar', {
@@ -61,5 +66,28 @@ export class AuthController {
   ) {
     const avatarUrl = file ? `/uploads/avatars/${file.filename}` : undefined;
     return this.authService.updateProfile(req.user.userId, dto, avatarUrl);
+  }
+
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @Post('invite')
+  inviteAdmin(@Body() dto: InviteAdminDto) {
+    return this.authService.inviteAdmin(dto);
+  }
+
+  @Post('activate')
+  activateAccount(@Body() dto: ActivateAccountDto) {
+    return this.authService.activateAccount(dto.token, dto.password);
+  }
+
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @Get('admins')
+  listAdmins() {
+    return this.authService.listAdmins();
+  }
+
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @Patch('admins/:id/permissions')
+  updatePermissions(@Param('id') id: string, @Body() dto: UpdatePermissionsDto) {
+    return this.authService.updatePermissions(+id, dto.permissions);
   }
 }
