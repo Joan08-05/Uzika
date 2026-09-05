@@ -50,20 +50,41 @@ export class AuthService {
     return this.buildToken(user);
   }
 
-  async login(dto: LoginDto) {
-    const user = await this.adminRepo.findOne({ where: { email: dto.email } });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-
-    if (user.status === 'pending') {
-      throw new UnauthorizedException('Please activate your account first. Check your email for the activation link.');
-    }
-
-    const match = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!match) throw new UnauthorizedException('Invalid credentials');
-
-    return this.buildToken(user);
+  async setAdminDisabled(adminId: number, disabled: boolean, requestingAdminId: number) {
+  if (adminId === requestingAdminId) {
+    throw new BadRequestException('You cannot disable your own account.');
   }
 
+  const user = await this.adminRepo.findOne({ where: { id: adminId } });
+  if (!user) throw new NotFoundException('Admin not found');
+
+  if (user.role === 'SuperAdmin') {
+    throw new BadRequestException('Cannot disable a SuperAdmin account.');
+  }
+
+  user.status = disabled ? 'disabled' : 'active';
+  await this.adminRepo.save(user);
+
+  return { id: user.id, status: user.status };
+  }
+
+  async login(dto: LoginDto) {
+  const user = await this.adminRepo.findOne({ where: { email: dto.email } });
+  if (!user) throw new UnauthorizedException('Invalid credentials');
+
+  if (user.status === 'pending') {
+    throw new UnauthorizedException('Please activate your account first. Check your email for the activation link.');
+  }
+
+  if (user.status === 'disabled') {
+    throw new UnauthorizedException('This account has been disabled. Contact your administrator.');
+  }
+
+  const match = await bcrypt.compare(dto.password, user.passwordHash);
+  if (!match) throw new UnauthorizedException('Invalid credentials');
+
+  return this.buildToken(user);
+  }
   async forgotPassword(email: string) {
     const user = await this.adminRepo.findOne({ where: { email } });
     const genericResponse = { message: 'If that email is registered, a reset link has been sent.' };
@@ -146,25 +167,25 @@ export class AuthService {
   }
 
   async inviteAdmin(dto: InviteAdminDto) {
-    const existing = await this.adminRepo.findOne({ where: { email: dto.email } });
-    if (existing) throw new ConflictException('An account with this email already exists');
+  const existing = await this.adminRepo.findOne({ where: { email: dto.email } });
+  if (existing) throw new ConflictException('An account with this email already exists');
 
-    const token = crypto.randomBytes(32).toString('hex');
-    const user = this.adminRepo.create({
-      name: dto.name,
-      email: dto.email,
-      passwordHash: null as any,
-      status: 'pending',
-      permissions: dto.permissions ?? DEFAULT_PERMISSIONS,
-      activationToken: token,
-      activationTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    });
-    await this.adminRepo.save(user);
+  const token = crypto.randomBytes(32).toString('hex');
+  const user = this.adminRepo.create({
+    name: dto.name,
+    email: dto.email,
+    passwordHash: null as any,
+    status: 'pending',
+    permissions: { dashboard: true, ...(dto.permissions ?? {}) },
+    activationToken: token,
+    activationTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  });
+  await this.adminRepo.save(user);
 
-    const activationUrl = `http://localhost:5173/activate-account?token=${token}`;
-    await this.mailService.sendAdminInviteEmail(dto.email, dto.name, activationUrl);
+  const activationUrl = `http://localhost:5173/activate-account?token=${token}`;
+  await this.mailService.sendAdminInviteEmail(dto.email, dto.name, activationUrl);
 
-    return { message: `Invitation sent to ${dto.email}` };
+  return { message: `Invitation sent to ${dto.email}` };
   }
 
   async activateAccount(token: string, password: string) {

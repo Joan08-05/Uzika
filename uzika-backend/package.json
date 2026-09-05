@@ -19,7 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "clear:admins": "ts-node -r tsconfig-paths/register src/database/clear-admins.ts"
+    "clear:admins": "ts-node -r tsconfig-paths/register src/database/clear-admins.ts",
+    "seed:vendors": "ts-node -r tsconfig-paths/register src/database/seed-vendors.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

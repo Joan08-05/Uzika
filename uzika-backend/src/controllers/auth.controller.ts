@@ -90,4 +90,10 @@ export class AuthController {
   updatePermissions(@Param('id') id: string, @Body() dto: UpdatePermissionsDto) {
     return this.authService.updatePermissions(+id, dto.permissions);
   }
+
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @Patch('admins/:id/status')
+  setAdminDisabled(@Param('id') id: string, @Body('disabled') disabled: boolean, @Request() req: any) {
+    return this.authService.setAdminDisabled(+id, disabled, req.user.userId);
+  }
 }

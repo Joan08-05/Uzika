@@ -21,7 +21,7 @@ export class AdminUser {
   avatarUrl: string | null;
 
   @Column({ default: 'active' })
-  status: 'pending' | 'active';
+  status: 'pending' | 'active' | 'disabled';
 
   @Column({ type: 'varchar', nullable: true })
   activationToken: string | null;

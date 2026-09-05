@@ -6,6 +6,7 @@ import { AppService } from '../services/app.service';
 import { Vendor } from '../database/entities/vendor.entity';
 import { AdminUser } from '../database/entities/admin-user.entity';
 import { AuthModule } from './auth.module';
+import { VendorsModule } from './vendors.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './auth.module';
       }),
     }),
     AuthModule,
+    VendorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
