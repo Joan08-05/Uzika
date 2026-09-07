@@ -20,7 +20,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "clear:admins": "ts-node -r tsconfig-paths/register src/database/clear-admins.ts",
-    "seed:vendors": "ts-node -r tsconfig-paths/register src/database/seed-vendors.ts"
+    "seed:vendors": "ts-node -r tsconfig-paths/register src/database/seed-vendors.ts",
+    "seed:customers": "ts-node -r tsconfig-paths/register src/database/seed-customers.ts",
+    "seed:orders": "ts-node -r tsconfig-paths/register src/database/seed-orders.ts",
+    "clear:orders": "ts-node -r tsconfig-paths/register src/database/clear-orders.ts",
+    "drop:orders-table": "ts-node -r tsconfig-paths/register src/database/drop-orders-table.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
@@ -53,6 +57,7 @@
     "@types/multer": "^2.2.0",
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^7.0.0",
     "jest": "^30.0.0",
     "oxlint": "^1.58.0",
