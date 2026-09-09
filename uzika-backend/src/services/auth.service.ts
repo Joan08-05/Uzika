@@ -123,48 +123,54 @@ export class AuthService {
   }
 
   private buildToken(user: AdminUser) {
-    const payload = { sub: user.id, email: user.email, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        avatarUrl: user.avatarUrl,
-        permissions: user.role === 'SuperAdmin' ? null : user.permissions,
-      },
-    };
-  }
-
-  async updateProfile(userId: number, dto: UpdateProfileDto, avatarUrl?: string) {
-    const user = await this.adminRepo.findOne({ where: { id: userId } });
-    if (!user) throw new UnauthorizedException('User not found');
-
-    const firstName = dto.firstName?.trim();
-    const lastName = dto.lastName?.trim();
-
-    if (firstName || lastName) {
-      const existingParts = user.name.split(' ');
-      const newFirst = firstName ?? existingParts[0] ?? '';
-      const newLast = lastName ?? existingParts.slice(1).join(' ');
-      user.name = [newFirst, newLast].filter(Boolean).join(' ');
-    }
-
-    if (avatarUrl) {
-      user.avatarUrl = avatarUrl;
-    }
-
-    await this.adminRepo.save(user);
-
-    return {
+  const payload = { sub: user.id, email: user.email, role: user.role };
+  return {
+    access_token: this.jwtService.sign(payload),
+    user: {
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
       avatarUrl: user.avatarUrl,
-    };
+      country: user.country,
+      permissions: user.role === 'SuperAdmin' ? null : user.permissions,
+    },
+  };
+}
+
+  async updateProfile(userId: number, dto: UpdateProfileDto, avatarUrl?: string) {
+  const user = await this.adminRepo.findOne({ where: { id: userId } });
+  if (!user) throw new UnauthorizedException('User not found');
+
+  const firstName = dto.firstName?.trim();
+  const lastName = dto.lastName?.trim();
+
+  if (firstName || lastName) {
+    const existingParts = user.name.split(' ');
+    const newFirst = firstName ?? existingParts[0] ?? '';
+    const newLast = lastName ?? existingParts.slice(1).join(' ');
+    user.name = [newFirst, newLast].filter(Boolean).join(' ');
   }
+
+  if (dto.country !== undefined) {
+    user.country = dto.country;
+  }
+
+  if (avatarUrl) {
+    user.avatarUrl = avatarUrl;
+  }
+
+  await this.adminRepo.save(user);
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    avatarUrl: user.avatarUrl,
+    country: user.country,
+  };
+}
 
   async inviteAdmin(dto: InviteAdminDto) {
   const existing = await this.adminRepo.findOne({ where: { email: dto.email } });

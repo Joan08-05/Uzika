@@ -23,6 +23,7 @@
     "seed:vendors": "ts-node -r tsconfig-paths/register src/database/seed-vendors.ts",
     "seed:customers": "ts-node -r tsconfig-paths/register src/database/seed-customers.ts",
     "seed:orders": "ts-node -r tsconfig-paths/register src/database/seed-orders.ts",
+    "seed:cash-test-vendor": "ts-node -r tsconfig-paths/register src/database/seed-cash-test-vendor.ts",
     "clear:orders": "ts-node -r tsconfig-paths/register src/database/clear-orders.ts",
     "drop:orders-table": "ts-node -r tsconfig-paths/register src/database/drop-orders-table.ts"
   },

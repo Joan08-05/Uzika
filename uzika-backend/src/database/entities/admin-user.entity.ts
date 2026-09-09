@@ -40,4 +40,7 @@ export class AdminUser {
 
   @Column({ type: 'jsonb', default: () => "'{}'" })
   permissions: Record<string, boolean>;
+
+  @Column({ type: 'varchar', nullable: true })
+  country: string | null;
 }

@@ -6,11 +6,13 @@ import { AppService } from '../services/app.service';
 import { Vendor } from '../database/entities/vendor.entity';
 import { AdminUser } from '../database/entities/admin-user.entity';
 import { Customer } from '../database/entities/customer.entity';
+import { Complaint } from '../database/entities/complaint.entity';
 import { AuthModule } from './auth.module';
 import { VendorsModule } from './vendors.module';
 import { CustomersModule } from './customers.module';
 import { Order } from '../database/entities/order.entity';
 import { OrdersModule } from './orders.module';
+import { ComplaintsModule } from './complaints.module';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { OrdersModule } from './orders.module';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [Vendor, AdminUser, Customer, Order],
+        entities: [Vendor, AdminUser, Customer, Order, Complaint],
         autoLoadEntities: true,
         synchronize: true,
       }),
@@ -34,6 +36,7 @@ import { OrdersModule } from './orders.module';
     VendorsModule,
     CustomersModule,
     OrdersModule,
+    ComplaintsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

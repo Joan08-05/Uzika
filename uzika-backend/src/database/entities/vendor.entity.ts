@@ -47,6 +47,12 @@ export class Vendor {
   @Column({ type: 'timestamp', nullable: true })
   suspendedDate: Date | null;
 
+  @Column({ type: 'float', default: 0 })
+  commissionOwed: number;
+
+  @Column({ type: 'float', default: 0 })
+  mobileMoneyPendingSettlement: number;
+
   @CreateDateColumn()
   createdAt: Date;
 }

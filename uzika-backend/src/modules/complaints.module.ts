@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
+import { Complaint } from '../database/entities/complaint.entity';
+import { Vendor } from '../database/entities/vendor.entity';
 import { Customer } from '../database/entities/customer.entity';
-import { Order } from '../database/entities/order.entity';
 import { AdminUser } from '../database/entities/admin-user.entity';
-import { CustomersController } from '../controllers/customers.controller';
-import { CustomersService } from '../services/customers.service';
+import { ComplaintsController } from '../controllers/complaints.controller';
+import { ComplaintsService } from '../services/complaints.service';
 import { PermissionGuard } from '../guard/permission.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Customer, Order, AdminUser]),
+    TypeOrmModule.forFeature([Complaint, Vendor, Customer, AdminUser]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  controllers: [CustomersController],
-  providers: [CustomersService, PermissionGuard, JwtStrategy],
+  controllers: [ComplaintsController],
+  providers: [ComplaintsService, PermissionGuard, JwtStrategy],
 })
-export class CustomersModule {}
+export class ComplaintsModule {}

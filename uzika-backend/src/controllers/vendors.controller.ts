@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { PermissionGuard } from '../guard/permission.guard';
 import { RequirePermission } from '../decorators/require-permission.decorator';
@@ -22,8 +22,13 @@ export class VendorsController {
   }
 
   @Patch(':id/settle')
-  markSettled(@Param('id') id: string) {
-    return this.vendorsService.markSettled(+id);
+  markSettled(@Param('id') id: string, @Req() req: any) {
+    return this.vendorsService.markSettled(+id, req.user);
+  }
+
+  @Get(':id/settlements')
+  getSettlementHistory(@Param('id') id: string) {
+    return this.vendorsService.getSettlementHistory(+id);
   }
 
   @Patch(':id/toggle-open')

@@ -49,6 +49,12 @@ export class Order {
   @Column({ default: false })
   refundIssued: boolean;
 
+  @Column({ default: false })
+  commissionCharged: boolean;
+
+  @Column({ type: 'float', default: 0 })
+  commissionAmount: number;
+
   @CreateDateColumn()
   createdAt: Date;
 }
